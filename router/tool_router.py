@@ -9,7 +9,7 @@ llm = ChatGoogleGenerativeAI(
 )
 
 
-def choose_tool(question: str):
+def choose_tool(context):
 
     prompt = f"""
 You are an AI Tool Router.
@@ -27,9 +27,11 @@ Rules:
 Return ONLY the tool name.
 
 Question:
-{question}
+{context.query}
 """
 
     response = llm.invoke(prompt)
 
-    return response.content.strip().lower()
+    context.selected_tool = response.content.strip().lower()
+
+    return context

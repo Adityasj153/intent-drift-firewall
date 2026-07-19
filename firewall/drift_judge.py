@@ -13,7 +13,7 @@ class DriftJudge:
             temperature=0
         )
 
-    def evaluate(self, intent, requested_tool):
+    def evaluate(self, context):
 
         prompt = f"""
 You are an AI Security Judge.
