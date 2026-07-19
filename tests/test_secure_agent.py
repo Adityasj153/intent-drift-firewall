@@ -1,4 +1,4 @@
-from agent.secure_agent import SecureAgent
+from agents.secure_agent import SecureAgent
 
 agent = SecureAgent()
 

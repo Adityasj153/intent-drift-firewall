@@ -44,7 +44,7 @@ for i, (intent, tool) in enumerate(tests, start=1):
     print(f"\nScenario {i}")
     print("-" * 40)
 
-    result = judge.judge(intent, tool)
+    result = judge.evaluate(intent, tool)
 
     print("Intent :", intent)
     print("Tool   :", tool)

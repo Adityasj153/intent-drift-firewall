@@ -3,7 +3,7 @@ from firewall.drift_judge import DriftJudge
 from firewall.policy_engine import enforce
 from firewall.interceptor import ActionInterceptor
 
-from agents.tool_router import choose_tool
+from router.tool_router import choose_tool
 from tools.tool_executor import run_tool
 
 
