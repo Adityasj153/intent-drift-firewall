@@ -1,57 +1,28 @@
-from router.tool_router import ToolRouter
-from firewall.drift_judge import DriftJudge
-from firewall.prompt_injection import PromptInjectionDetector
-from firewall.risk_engine import RiskEngine
-from firewall.decision_engine import DecisionEngine
-
-from tools.tool_executor import run_tool
+from core.context import Context
+from core.pipeline import Pipeline
 
 
 def main():
 
-    router = ToolRouter()
-    judge = DriftJudge()
-    detector = PromptInjectionDetector()
-    risk_engine = RiskEngine()
-    decision_engine = DecisionEngine()
-
     query = input("User > ")
 
-    # Step 1: Select tool
-    requested_tool = router.route(query)
+    context = Context(query)
 
-    # Step 2: Check intent drift
-    drift_result = judge.evaluate(query, requested_tool)
+    pipeline = Pipeline()
 
-    intent_drift = drift_result["intent_drift"]
+    context = pipeline.run(context)
 
-    # Step 3: Detect prompt injection
-    prompt_injection = detector.detect(query)
+    print("\n===== PIPELINE CONTEXT =====")
 
-    # Step 4: Calculate risk
-    risk = risk_engine.assess(
-        intent_drift=intent_drift,
-        prompt_injection=prompt_injection,
-        requested_tool=requested_tool
-    )
+    print(context.to_dict())
 
-    print("\nRisk Assessment")
-    print(risk)
+    if context.result is not None:
 
-    # Step 5: Make decision
-    decision = decision_engine.decide(risk)
+        print("\nResult")
 
-    if decision["action"] == "BLOCK":
-        print("\nBLOCKED")
-        print(decision["message"])
-        return
-
-    # Step 6: Execute tool
-    result = run_tool(requested_tool, query)
-
-    print("\nResult")
-    print(result)
+        print(context.result)
 
 
 if __name__ == "__main__":
+
     main()
