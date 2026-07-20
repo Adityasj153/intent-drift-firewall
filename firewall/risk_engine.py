@@ -1,19 +1,18 @@
 class RiskEngine:
     """
-    Computes a deterministic risk score for a request.
+Computes a deterministic risk score.
 
-    Inputs:
-        intent_drift (bool)
-        prompt_injection (bool)
-        requested_tool (str)
+Input:
+    Context
 
-    Output:
-        {
-            "risk_score": int,
-            "severity": str,
-            "reasons": list[str]
-        }
-    """
+Reads:
+    context.drift
+    context.prompt_injection
+    context.selected_tool
+
+Writes:
+    context.risk
+"""
 
     # Risk weights
     DRIFT_SCORE = 60
@@ -26,23 +25,23 @@ class RiskEngine:
         "llm"
     }
 
-    def assess(self, intent_drift, prompt_injection, requested_tool):
+    def assess(self, context):
 
         score = 0
         reasons = []
 
         # Intent drift
-        if intent_drift:
+        if context.drift["decision"] == "BLOCK":
             score += self.DRIFT_SCORE
             reasons.append("Tool does not match intent.")
 
         # Prompt injection
-        if prompt_injection:
+        if context.prompt_injection["detected"]:
             score += self.PROMPT_INJECTION_SCORE
             reasons.append("Prompt injection detected.")
 
         # Unknown tool
-        if requested_tool not in self.ALLOWED_TOOLS:
+        if context.selected_tool not in self.ALLOWED_TOOLS:
             score += self.UNKNOWN_TOOL_SCORE
             reasons.append("Unknown tool requested.")
 
@@ -63,8 +62,11 @@ class RiskEngine:
         if not reasons:
             reasons.append("No significant risk detected.")
 
-        return {
+        context.risk = {
             "risk_score": score,
             "severity": severity,
+            "confidence": 1.0,
             "reasons": reasons
         }
+
+        return context

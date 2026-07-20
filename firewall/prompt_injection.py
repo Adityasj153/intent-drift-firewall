@@ -14,11 +14,23 @@ class PromptInjectionDetector:
         "jailbreak",
     ]
 
-    def detect(self, query: str) -> bool:
-        query = query.lower()
+    def detect(self, context):
+
+        query = context.query.lower()
 
         for pattern in self.SUSPICIOUS_PATTERNS:
             if pattern in query:
-                return True
+                context.prompt_injection = {
+                    "detected": True,
+                    "pattern": pattern,
+                    "reason": f"Matched suspicious pattern: '{pattern}'."
+                }
+                return context
 
-        return False
+        context.prompt_injection = {
+            "detected": False,
+            "pattern": None,
+            "reason": "No prompt injection detected."
+        }
+
+        return context

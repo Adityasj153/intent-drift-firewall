@@ -1,20 +1,21 @@
 class DecisionEngine:
     """
-    Makes the final decision based on the calculated risk.
+    Makes the final policy decision based on the calculated risk.
     """
 
     BLOCK_SEVERITIES = {"HIGH", "CRITICAL"}
 
-    def decide(self, risk):
+    def decide(self, context):
 
-        if risk["severity"] in self.BLOCK_SEVERITIES:
-            return {
+        if context.risk["severity"] in self.BLOCK_SEVERITIES:
+            context.policy = {
                 "action": "BLOCK",
-                "message": "Request blocked for security reasons.",
-                "risk": risk
+                "message": "Request blocked for security reasons."
+            }
+        else:
+            context.policy = {
+                "action": "ALLOW",
+                "message": "Request allowed."
             }
 
-        return {
-            "action": "ALLOW",
-            "risk": risk
-        }
+        return context
