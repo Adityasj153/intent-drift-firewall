@@ -1,0 +1,14 @@
+# Handle line endings automatically for all text files
+* text=auto 
+
+# Explicitly ensure code and config files use LF (Linux/Max style) in the repo
+*.txt text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+
+# Ensure Windows batch files retain CRLF format if needed
+*.bat text eol=crlf
+
+# Treat images and compiled assets as binary to prevent modifications
+*.png binary
+*.jpg binary
