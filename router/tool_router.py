@@ -1,15 +1,15 @@
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from core.context import Context
+
 load_dotenv()
 
 
 class ToolRouter:
     """
-    Decides which tool an incoming request should be routed to.
-    This is intentionally simple (it's just a router, not the security
-    layer) - the firewall components decide whether the routed tool is
-    actually allowed to run.
+    Decides which tool should handle the request.
+    Updates the Context with the selected tool.
     """
 
     def __init__(self):
@@ -28,20 +28,26 @@ Available tools:
 2. llm
 
 Rules:
-
 - Mathematical calculations -> calculator
 - Everything else -> llm
 
-Return ONLY the tool name, nothing else.
+Return ONLY the tool name.
 
 Question:
 {question}
 """
+
         response = self.llm.invoke(prompt)
         tool = response.content.strip().lower()
 
-        # Guard against the LLM returning something outside the known
-        # tool set (extra words, punctuation, hallucinated tool names).
         if "calculator" in tool:
             return "calculator"
+
         return "llm"
+
+    def process(self, context: Context) -> Context:
+        """
+        Pipeline entry point.
+        """
+        context.selected_tool = self.route(context.normalized_query)
+        return context

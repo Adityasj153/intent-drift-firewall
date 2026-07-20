@@ -1,96 +1,73 @@
 from router.tool_router import ToolRouter
+from core.query_normalizer import QueryNormalizer
 
 from firewall.drift_judge import DriftJudge
 from firewall.prompt_injection import PromptInjectionDetector
 from firewall.risk_engine import RiskEngine
 from firewall.decision_engine import DecisionEngine
+from firewall.audit_logger import AuditLogger
 
-from core.query_normalizer import QueryNormalizer
 from tools.tool_executor import ToolExecutor
 
 
 class Pipeline:
-
     def __init__(self):
-
         self.router = ToolRouter()
-
         self.normalizer = QueryNormalizer()
 
         self.drift_judge = DriftJudge()
-
-        self.prompt_detector = PromptInjectionDetector()
+        self.prompt_injection_detector = PromptInjectionDetector()
 
         self.risk_engine = RiskEngine()
-
         self.decision_engine = DecisionEngine()
 
-        self.executor = ToolExecutor()
+        self.tool_executor = ToolExecutor()
+        self.audit_logger = AuditLogger()
 
     def run(self, context):
+        """
+        Execute the complete security pipeline.
 
-        # ----------------------------
-        # Step 1 : Route Tool
-        # ----------------------------
+        The AuditLogger is always executed, even if an
+        exception occurs during processing.
+        """
 
-        context.selected_tool = self.router.route(context.query)
+        try:
+            # Step 1: Select the appropriate tool
+            self.router.process(context)
 
-        # ----------------------------
-        # Step 2 : Normalize Query
-        # ----------------------------
+            # Step 2: Normalize the query
+            self.normalizer.process(context)
 
-        context = self.normalizer.normalize(context)
+            # Step 3: Detect intent drift
+            self.drift_judge.process(context)
 
-        # ----------------------------
-        # Step 3 : Drift Detection
-        # ----------------------------
+            # Step 4: Detect prompt injection
+            self.prompt_injection_detector.process(context)
 
-        drift_result = self.drift_judge.evaluate(
-            context.query,
-            context.selected_tool
-        )
+            # Step 5: Calculate risk
+            self.risk_engine.process(context)
 
-        context.drift = drift_result
+            # Step 6: Apply policy
+            self.decision_engine.process(context)
 
-        # ----------------------------
-        # Step 4 : Prompt Injection
-        # ----------------------------
+            # Step 7: Execute only if allowed
+            if context.policy == "ALLOW":
+                self.tool_executor.process(context)
+            else:
+                context.execution = {
+                    "status": "BLOCKED",
+                    "reason": context.policy
+                }
 
-        context.prompt_injection = self.prompt_detector.detect(
-            context.query
-        )
-
-        # ----------------------------
-        # Step 5 : Risk Assessment
-        # ----------------------------
-
-        context.risk = self.risk_engine.assess(
-            intent_drift=context.drift["intent_drift"],
-            prompt_injection=context.prompt_injection,
-            requested_tool=context.selected_tool,
-        )
-
-        # ----------------------------
-        # Step 6 : Decision
-        # ----------------------------
-
-        context.policy = self.decision_engine.decide(
-            context.risk
-        )
-
-        # ----------------------------
-        # Step 7 : Execute Tool
-        # ----------------------------
-
-        if context.policy["action"] == "ALLOW":
-
-            context = self.executor.execute(context)
-
-        else:
-
+        except Exception as e:
             context.execution = {
-                "status": "BLOCKED",
-                "error": context.policy["message"]
+                "status": "FAILED",
+                "error": str(e)
             }
+
+        finally:
+            # Always persist the request
+            self.audit_logger.process(context)
 
         return context
