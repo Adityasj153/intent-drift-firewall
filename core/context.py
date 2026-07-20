@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 
@@ -13,7 +13,7 @@ class Context:
 
         # ---------- Request Metadata ----------
         self.request_id = str(uuid.uuid4())
-        self.timestamp = datetime.utcnow().isoformat()
+        self.timestamp = datetime.now(timezone.utc).isoformat()
 
         # ---------- User Input ----------
         self.query = query                   # Original query
