@@ -77,7 +77,7 @@ if st.button("Analyze Query", type="primary"):
         st.json(context.risk)
 
         st.write("**Policy Decision**")
-        st.code(context.policy)
+        st.json(context.policy)
 
     # ----------------------------------
     # Execution Details
