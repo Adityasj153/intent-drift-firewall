@@ -1,4 +1,4 @@
-from logging_system.database import Database
+from database.database import Database
 
 Database()
 

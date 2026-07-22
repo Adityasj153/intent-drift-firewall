@@ -6,7 +6,7 @@ from firewall.drift_judge import DriftJudge
 from firewall.prompt_injection import PromptInjectionDetector
 from firewall.risk_engine import RiskEngine
 from firewall.decision_engine import DecisionEngine
-from logging_system.audit_logger import AuditLogger
+from firewall.audit_logger import AuditLogger
 
 from tools.tool_executor import ToolExecutor
 
