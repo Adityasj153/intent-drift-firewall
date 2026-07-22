@@ -10,6 +10,6 @@ def test_safe_calculator():
 
     result = pipeline.run(context)
 
-    assert result.policy == "ALLOW"
+    assert result.policy["action"] == "ALLOW"
     assert result.execution["status"] == "SUCCESS"
     assert result.result == 4

@@ -70,3 +70,7 @@ Writes:
         }
 
         return context
+
+    def process(self, context):
+        """Pipeline entry point."""
+        return self.assess(context)

@@ -19,3 +19,7 @@ class DecisionEngine:
             }
 
         return context
+
+    def process(self, context):
+        """Pipeline entry point."""
+        return self.decide(context)

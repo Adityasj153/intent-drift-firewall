@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from core.context import Context
-from firewall.audit_logger import AuditLogger
+from logging_system.audit_logger import AuditLogger
 
 
 class TestAuditLogger(unittest.TestCase):

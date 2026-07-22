@@ -54,3 +54,7 @@ class ToolExecutor:
             }
 
         return context
+
+    def process(self, context):
+        """Pipeline entry point."""
+        return self.execute(context)

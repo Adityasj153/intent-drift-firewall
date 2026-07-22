@@ -11,7 +11,7 @@ venv/
 .env
 
 # Logs
-logs/
+logging_system/
 *.log
 
 # VS Code

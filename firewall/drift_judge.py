@@ -59,3 +59,14 @@ Do not explain anything else. Do not use markdown or code fences.
         result.setdefault("reason", "No reason provided")
 
         return result
+
+    def process(self, context):
+        """
+        Pipeline entry point. Reads context.intent (set by the intent
+        extractor) and context.selected_tool (set by the router),
+        writes the result to context.drift.
+        """
+        goal = context.intent.get("goal") if context.intent else context.query
+        result = self.evaluate(goal, context.selected_tool)
+        context.drift = result
+        return context

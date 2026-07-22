@@ -63,3 +63,10 @@ class QueryNormalizer:
         context.normalized_query = expression
 
         return context
+
+    def process(self, context):
+        """
+        Pipeline entry point. Kept separate from normalize() so
+        existing direct callers/tests using normalize() still work.
+        """
+        return self.normalize(context)

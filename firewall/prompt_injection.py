@@ -34,3 +34,7 @@ class PromptInjectionDetector:
         }
 
         return context
+
+    def process(self, context):
+        """Pipeline entry point."""
+        return self.detect(context)

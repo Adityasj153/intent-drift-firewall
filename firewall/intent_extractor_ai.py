@@ -46,3 +46,11 @@ User Request:
         text = text.strip()
 
         return json.loads(text)
+
+    def process(self, context):
+        """
+        Pipeline entry point. Writes context.intent so DriftJudge has
+        something concrete to compare the selected tool against.
+        """
+        context.intent = self.extract(context.query)
+        return context
